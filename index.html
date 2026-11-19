@@ -164,6 +164,35 @@ body[data-theme="dark"] .qsort-rvp-pill{background:var(--surface3);color:var(--i
 /* Per-category scoring rows */
 .cat-row{display:grid;grid-template-columns:48px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid var(--rule);align-items:flex-start}
 .cat-row:last-child{border-bottom:none}
+.cat-row.has-self{grid-template-columns:48px 1fr auto}
+.cat-self{text-align:right;font-size:11px;color:var(--ink3);white-space:nowrap;padding-top:2px}
+.cat-self b{display:block;font-family:var(--serif);font-size:18px;color:var(--ink);font-weight:400;line-height:1.1}
+.pc-gap{display:inline-block;margin-top:3px;padding:1px 7px;border-radius:9px;font-size:11px;font-weight:700;background:var(--surface2);color:var(--ink2)}
+.pc-gap.big{background:#fdf0c4;color:#7a5600}
+.pc-avg{display:flex;justify-content:space-between;gap:12px;padding:10px 0 2px;border-top:2px solid var(--rule);font-weight:700;font-size:13px}
+.pc-note{font-size:11px;color:var(--ink3);font-style:italic;margin-top:6px}
+.pc-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.pc-tile{background:var(--surface2);border:1px solid var(--rule);border-radius:6px;padding:8px 10px}
+.pc-tile .lbl{font-size:9px;letter-spacing:.8px;font-weight:700;color:var(--ink3)}
+.pc-tile .val{font-family:var(--serif);font-size:22px;line-height:1.1}
+.pc-tile .sub{font-size:10.5px;color:var(--ink3)}
+.pc-q{display:grid;grid-template-columns:46px 1fr 40px 90px 52px;gap:8px;align-items:center;font-size:12.5px;padding:4px 0;border-bottom:1px solid var(--rule)}
+.pc-q .grp{font-size:9px;letter-spacing:.6px;color:var(--ink3);font-weight:700}
+.pc-q .sc{font-weight:700;text-align:right}
+.pc-q .bar{height:5px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.pc-q .bar i{display:block;height:100%;background:#c9a227}
+.pc-q .bar i.hd{background:#8fa6d8}
+.pc-q .rk{font-size:11px;color:var(--ink3)}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pc-box{background:var(--surface2);border:1px solid var(--rule);border-radius:6px;padding:10px 12px;font-size:13px;line-height:1.45;white-space:pre-line}
+.pc-box.signals{background:#fdf3cf;border-color:#ecd98a;color:#3d3200}
+.pc-box .gm-narr-label{color:var(--green-700)}
+.pc-box.signals .gm-narr-label{color:#7a5600}
+.pc-box .hint{font-size:10.5px;font-style:italic;opacity:.8;margin-bottom:3px}
+.pc-sub{font-size:12.5px;line-height:1.5;margin-bottom:6px}
+.pc-sub b{font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink3);margin-right:6px}
+.pc-src{font-size:10.5px;color:var(--ink3);margin:4px 0 18px}
+@media(max-width:700px){.pc-grid{grid-template-columns:1fr}.pc-q{grid-template-columns:40px 1fr 36px 48px}.pc-q .bar{display:none}}
 .cat-score-chip{width:48px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;color:var(--ink);font-weight:700;border:1px solid rgba(0,0,0,0.08);font-variant-numeric:tabular-nums}
 .cat-score-chip.s5{background:var(--cell-green)}
 .cat-score-chip.s4{background:var(--cell-blue)}
@@ -289,7 +318,7 @@ body[data-theme="dark"] .qsort-rvp-pill{background:var(--surface3);color:var(--i
 
 /* Category form block */
 .cat-form-block{background:var(--surface2);border-radius:6px;padding:12px;margin-bottom:10px;border-left:3px solid var(--green-700)}
-.cat-form-hdr{display:grid;grid-template-columns:auto 1fr 120px;gap:10px;align-items:center;margin-bottom:8px}
+.cat-form-hdr{display:grid;grid-template-columns:auto 1fr 104px 104px;gap:10px;align-items:center;margin-bottom:8px}
 .cat-form-name{font-size:13px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px}
 .cat-num-label{display:inline-block;background:var(--green-700);color:#fff;width:20px;height:20px;border-radius:999px;text-align:center;font-size:11px;line-height:20px;font-weight:700;margin-right:6px}
 .cat-form-block .form-field{margin-bottom:6px}
@@ -862,6 +891,7 @@ var CGP_CLUBS = [
   { name: "Monterey Country Club", type: "Private" },
   { name: "PGA West - Private", type: "Private" },
   { name: "PGA West - Tournament", type: "Daily Fee" },
+  { name: "PGA WEST", type: "" },
   { name: "Palm Valley Country Club", type: "Private" },
   { name: "Spanish Hills Club", type: "Private" },
   { name: "Sunset Hills Country Club", type: "Private" },
@@ -961,6 +991,7 @@ function newGM() {
     cat5Score: '', cat5Headline: '', cat5Narrative: '',
     cat6Score: '', cat6Headline: '', cat6Narrative: '',
     highlights: '', edges: '', opportunities: '', gmRecommendation: '',
+    timeInRole: '', oversees: '', signals: '', askedFor: '', gmNextSteps: '', bench: '',
     nextRole: '', successor: '', readiness: '',
     placement: null, placedAt: null, status: 'pending',
     // Tier 2 additions
@@ -1329,6 +1360,83 @@ function scoreChipClass(score) {
   return 'sN';
 }
 
+// ----- player card fields (self scores, intangibles, signals, asked for, next steps, bench) -----
+function hasPC(g) { return !!(g.pcGroup || g.intangibles || g.signals || g.askedFor || g.gmNextSteps || g.bench); }
+function pcNum(v) { var n = parseFloat(v); return isNaN(n) ? null : n; }
+function pcAvg(g, suffix) {
+  var s = 0, n = 0;
+  CATEGORIES.forEach(function(c) { var v = pcNum(g[c.key + suffix]); if (v != null) { s += v; n++; } });
+  return n ? s / n : null;
+}
+function pcPairGap(g) {
+  var s = 0, n = 0;
+  CATEGORIES.forEach(function(c) { var a = pcNum(g[c.key + 'Score']), b = pcNum(g[c.key + 'Self']); if (a != null && b != null) { s += b - a; n++; } });
+  return n ? s / n : null;
+}
+function pcFix2(x) {
+  var m = Math.round(x * 1000) / 10, f = Math.floor(m), r = m - f;
+  var n = Math.abs(r - 0.5) < 1e-9 ? (f % 2 === 0 ? f : f + 1) : Math.round(m);
+  return (n / 100).toFixed(2);
+}
+function pcSigned(d, txt) { return (d > 0 ? '+' : '') + txt; }
+function pcGapHtml(a, b) {
+  if (a == null || b == null) return '';
+  var d = Math.round((b - a) * 100) / 100;
+  var t = d === 0 ? '0' : pcSigned(d, (Math.round(d * 2) === d * 2) ? d.toFixed(1) : String(d));
+  return '<span class="pc-gap' + (Math.abs(d) >= 1 ? ' big' : '') + '">' + t + '</span>';
+}
+function pcAvgGapText(g) {
+  var d = pcPairGap(g);
+  if (d == null) return '';
+  var t = pcFix2(d);
+  if (t === '-0.00') t = '0.00';
+  return (t.charAt(0) === '-' ? '' : '+') + t;
+}
+function pcBox(cls, label, hint, body) {
+  return '<div class="pc-box' + (cls ? ' ' + cls : '') + '"><div class="gm-narr-label">' + label + '</div>' +
+    (hint ? '<div class="hint">' + hint + '</div>' : '') + (body ? esc(body) : '<span class="empty-body">&mdash;</span>') + '</div>';
+}
+function pcSectionsHtml(g) {
+  if (!hasPC(g)) return '';
+  var h = '', it = g.intangibles;
+  h += '<div class="gm-section"><div class="gm-section-label">Intangibles &middot; Heart, Head, Hands' +
+    (it ? ' <span class="sub">online assessment' + (it.date ? ', ' + esc(it.date) : '') + ' &middot; percentile vs. department heads who completed it</span>' : '') + '</div>';
+  if (!it) h += '<div class="gm-section-body empty-body">Intangibles not completed.</div>';
+  else {
+    h += '<div class="pc-tiles">' + ['heart', 'head', 'hands'].map(function(k, i) {
+      return '<div class="pc-tile"><div class="lbl">' + k.toUpperCase() + '</div><div class="val">' + esc(it[k] || '—') + '</div>' +
+        '<div class="sub">Group avg ' + esc((it.avg || [])[i] || '—') + ' &middot; ' + esc((it.pct || [])[i] || '—') + '</div></div>';
+    }).join('') + '</div>';
+    (it.q || []).forEach(function(q) {
+      var p = /lowest/i.test(q[3]) ? 2 : (/highest/i.test(q[3]) ? 100 : (parseInt(q[3], 10) || 0));
+      h += '<div class="pc-q"><span class="grp">' + esc(q[0]) + '</span><span>' + esc(q[1]) + '</span><span class="sc">' + esc(q[2]) + '</span>' +
+        '<span class="bar"><i' + (q[0] === 'HEAD' ? ' class="hd"' : '') + ' style="width:' + Math.max(2, Math.min(100, p)) + '%"></i></span>' +
+        '<span class="rk">' + esc(q[3]) + '</span></div>';
+    });
+  }
+  h += '</div>';
+  if (g.subHigh || g.subLow || g.subNA) {
+    h += '<div class="gm-section"><div class="gm-section-label">GM Sub-scores</div>' +
+      (g.subHigh ? '<div class="pc-sub"><b>At 4 or 5</b>' + esc(g.subHigh) + '</div>' : '') +
+      (g.subLow ? '<div class="pc-sub"><b>At 2 or below</b>' + esc(g.subLow) + '</div>' : '') +
+      (g.subNA ? '<div class="pc-sub"><b>Left N/A by GM</b>' + esc(g.subNA) + '</div>' : '') + '</div>';
+  }
+  h += '<div class="gm-section"><div class="pc-grid">' +
+    pcBox('signals', 'Signals for the committee', 'Prepared from the sources, not the GM&rsquo;s words. Draft.', g.signals) +
+    pcBox('', 'What they asked for', '', g.askedFor) +
+    pcBox('', 'GM&rsquo;s next steps', '', g.gmNextSteps) +
+    pcBox('', 'Bench', '', g.bench) + '</div></div>';
+  var r = g.rank;
+  if (r) {
+    var grp = esc(g.pcGroup || 'group');
+    h += '<div class="gm-section"><div class="gm-section-label">Rankings <span class="sub">1 = highest &middot; as of the player cards</span></div>' +
+      '<div class="pc-sub"><b>GM feedback</b>' + esc(r.gmAll || 'n/r') + ' overall &middot; ' + esc(r.gmGroup || 'n/r') + ' in ' + grp + '</div>' +
+      '<div class="pc-sub"><b>Intangibles</b>' + esc(r.intAll || 'n/r') + ' overall &middot; ' + esc(r.intGroup || 'n/r') + ' in ' + grp + '</div></div>';
+  }
+  if (g.sources) h += '<div class="pc-src">Sources: ' + esc(g.sources) + '</div>';
+  return h;
+}
+
 function renderCard() {
   var g = getActiveGm();
   if (!g) return renderEmpty();
@@ -1346,6 +1454,8 @@ function renderCard() {
 
   var tags = [];
   if (g.clubType)    tags.push('<span class="gm-hdr-tag"><strong>Type:</strong> ' + esc(g.clubType) + '</span>');
+  if (g.timeInRole)  tags.push('<span class="gm-hdr-tag"><strong>Time in role:</strong> ' + esc(g.timeInRole) + '</span>');
+  if (g.oversees)    tags.push('<span class="gm-hdr-tag"><strong>Oversees:</strong> ' + esc(g.oversees) + '</span>');
 
   // Tenure strip
   var tenureHtml = '<div class="tenure-strip">' +
@@ -1354,22 +1464,33 @@ function renderCard() {
     '</div>';
 
 
-  // Scored categories
+  // Scored categories (GM score; self score and gap when a self assessment is on file)
+  var pc = hasPC(g);
+  var showSelf = pc || CATEGORIES.some(function(c) { return !!g[c.key + 'Self']; });
+  var hideNarr = pc && !g.highlights && !g.edges && !g.opportunities && !g.gmRecommendation;
   var catsHtml = '';
   CATEGORIES.forEach(function(c) {
     var score = g[c.key + 'Score'] || '';
+    var self = g[c.key + 'Self'] || '';
     var headline = g[c.key + 'Headline'] || '';
     var narrative = g[c.key + 'Narrative'] || '';
-    var subBadge = '';
-    var chipText = score && score !== 'N/A' ? score : (score === 'N/A' ? 'N/A' : '—');
-    catsHtml += '<div class="cat-row">' +
+    var chipText = score && score !== 'N/A' ? score + (g[c.key + 'Est'] ? '*' : '') : (score === 'N/A' ? 'N/A' : '—');
+    catsHtml += '<div class="cat-row' + (showSelf ? ' has-self' : '') + '">' +
       '<div class="cat-score-chip ' + scoreChipClass(score) + '">' + chipText + '</div>' +
       '<div class="cat-info">' +
-        '<div class="cat-info-hdr"><span class="cat-name">' + c.name + '</span>' + subBadge + '</div>' +
+        '<div class="cat-info-hdr"><span class="cat-name">' + c.name + '</span></div>' +
         '<div class="cat-headline ' + (headline ? '' : 'empty-body') + '">' + (esc(headline) || '— no headline —') + '</div>' +
-        '<div class="cat-narrative ' + (narrative ? '' : 'empty-body') + '">' + (esc(narrative) || '— no notes —') + '</div>' +
-      '</div></div>';
+        (narrative || !pc ? '<div class="cat-narrative ' + (narrative ? '' : 'empty-body') + '">' + (esc(narrative) || '— no notes —') + '</div>' : '') +
+      '</div>' +
+      (showSelf ? '<div class="cat-self">Self<b>' + esc(self || '—') + '</b>' + pcGapHtml(pcNum(score), pcNum(self)) + '</div>' : '') +
+      '</div>';
   });
+  if (showSelf) {
+    var gAvg = pcAvg(g, 'Score'), sAvg = pcAvg(g, 'Self'), gapTxt = pcAvgGapText(g);
+    catsHtml += '<div class="pc-avg"><span>Average of six categories</span><span>GM ' + (gAvg == null ? 'n/r' : pcFix2(gAvg)) +
+      ' &middot; Self ' + (sAvg == null ? 'n/r' : pcFix2(sAvg)) + (gapTxt ? ' &middot; Self &minus; GM ' + gapTxt : '') + '</span></div>';
+  }
+  if (g.scoreNote) catsHtml += '<div class="pc-note">' + esc(g.scoreNote) + '</div>';
 
   var matrixHtml = renderMatrix(g.placement, false);
   var readinessOpts = READINESS_OPTIONS.map(function(o) {
@@ -1399,14 +1520,13 @@ function renderCard() {
         '</div>' +
       '</div>' +
       '<div class="gm-body">' +
+        (pc && !g.yearsAsGmTotal && !g.yearsAtClub ? '' : '<div class="gm-section"><div class="gm-section-label">Tenure</div>' + tenureHtml + '</div>') +
         '<div class="gm-section">' +
-          '<div class="gm-section-label">Tenure</div>' +
-          tenureHtml +
-        '</div>' +
-        '<div class="gm-section">' +
-          '<div class="gm-section-label">Leadership Feedback Summary <span class="sub">scores 1&ndash;5 &middot; 3 is honored anchor</span></div>' +
+          '<div class="gm-section-label">' + (showSelf ? 'GM Feedback vs. Self Assessment <span class="sub">scale 1&ndash;5 &middot; 3 = fully meets</span>' : 'Leadership Feedback Summary <span class="sub">scores 1&ndash;5 &middot; 3 is honored anchor</span>') + '</div>' +
           catsHtml +
         '</div>' +
+        pcSectionsHtml(g) +
+        (hideNarr ? '' : (
         '<div class="gm-section">' +
           '<div class="gm-section-label">Narrative Summary</div>' +
           '<div class="gm-narratives">' +
@@ -1418,7 +1538,8 @@ function renderCard() {
         '<div class="gm-section">' +
           '<div class="gm-section-label">GM Recommendation</div>' +
           '<div class="gm-section-body ' + (g.gmRecommendation ? '' : 'empty-body') + '">' + (esc(g.gmRecommendation) || '— no recommendation entered —') + '</div>' +
-        '</div>' +
+        '</div>'
+        )) +
         '<div class="gm-section notes-section">' +
           '<div class="gm-section-label">Session Notes <span class="sub">what the room said — captured for IDP follow-up</span></div>' +
           '<textarea oninput="updateField(\'roomNotes\', this.value)" placeholder="Type what the room said about this leader — examples, edges, what to revisit, anything worth capturing for the post-session debrief.">' + esc(g.roomNotes || '') + '</textarea>' +
@@ -1944,7 +2065,7 @@ function renderModal(g) {
   }).join('');
 
   function scoreOpts(val) {
-    return SCORE_OPTIONS.map(function(o) {
+    return (SCORE_OPTIONS.indexOf(val || '') < 0 ? SCORE_OPTIONS.concat([val]) : SCORE_OPTIONS).map(function(o) {
       return '<option value="' + esc(o) + '"' + (val === o ? ' selected' : '') + '>' + esc(o || '—') + '</option>';
     }).join('');
   }
@@ -1962,7 +2083,8 @@ function renderModal(g) {
       '<div class="cat-form-hdr">' +
         '<div class="cat-form-name">' + c.name + '</div>' +
         '<div></div>' +
-        '<div class="form-field" style="margin:0;"><label style="margin-bottom:2px;">Score (1-5)</label><select data-field="' + c.key + 'Score">' + scoreOpts(g[c.key + 'Score'] || '') + '</select></div>' +
+        '<div class="form-field" style="margin:0;"><label style="margin-bottom:2px;">GM score</label><select data-field="' + c.key + 'Score">' + scoreOpts(g[c.key + 'Score'] || '') + '</select></div>' +
+        '<div class="form-field" style="margin:0;"><label style="margin-bottom:2px;">Self score</label><select data-field="' + c.key + 'Self">' + scoreOpts(g[c.key + 'Self'] || '') + '</select></div>' +
       '</div>' +
       subHint +
       '<div class="form-field"><label>Headline (one-line summary)</label><input type="text" data-field="' + c.key + 'Headline" value="' + esc(g[c.key + 'Headline'] || '') + '" placeholder="e.g. Banquet revenue +22% with a leaner team."></div>' +
@@ -2014,6 +2136,18 @@ function renderModal(g) {
     '<div class="form-section">' +
       '<div class="form-section-label">Leadership Feedback &mdash; 6 Categories (Score 1&ndash;5, 3 is honored anchor)</div>' +
       catsForm +
+    '</div>' +
+
+    '<div class="form-section">' +
+      '<div class="form-section-label">Player Card (from the assessments)</div>' +
+      '<div class="form-grid-2">' +
+        '<div class="form-field"><label>Time in role</label><input type="text" data-field="timeInRole" value="' + esc(g.timeInRole || '') + '"></div>' +
+        '<div class="form-field"><label>Oversees</label><input type="text" data-field="oversees" value="' + esc(g.oversees || '') + '"></div>' +
+      '</div>' +
+      '<div class="form-field"><label>Signals for the committee (one per line)</label><textarea data-field="signals">' + esc(g.signals || '') + '</textarea></div>' +
+      '<div class="form-field"><label>What they asked for</label><textarea data-field="askedFor">' + esc(g.askedFor || '') + '</textarea></div>' +
+      '<div class="form-field"><label>GM&rsquo;s next steps</label><textarea data-field="gmNextSteps">' + esc(g.gmNextSteps || '') + '</textarea></div>' +
+      '<div class="form-field"><label>Bench</label><input type="text" data-field="bench" value="' + esc(g.bench || '') + '"></div>' +
     '</div>' +
 
     '<div class="form-section">' +
@@ -3591,15 +3725,36 @@ function deriveKeys(pass) {
     return crypto.subtle.importKey('raw', u.slice(0, 32), 'AES-GCM', false, ['encrypt', 'decrypt']).then(function(key) { return { key: key, room: room }; });
   });
 }
+function streamBytes(u8, Ctor) {
+  var st = new Ctor('gzip'), w = st.writable.getWriter(), r = st.readable.getReader(), parts = [], n = 0;
+  w.write(u8); w.close();
+  function pump() {
+    return r.read().then(function(x) {
+      if (x.done) { var out = new Uint8Array(n), o = 0; parts.forEach(function(p) { out.set(p, o); o += p.length; }); return out; }
+      parts.push(x.value); n += x.value.length; return pump();
+    });
+  }
+  return pump();
+}
+// Large payloads are gzipped before encryption (box.z = 1) so a full roster stays small on the wire.
 function encryptObj(obj) {
   var iv = crypto.getRandomValues(new Uint8Array(12));
-  return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, sync.key, new TextEncoder().encode(JSON.stringify(obj))).then(function(ct) {
-    return { iv: b64enc(iv), ct: b64enc(new Uint8Array(ct)) };
+  var raw = new TextEncoder().encode(JSON.stringify(obj));
+  var zip = typeof CompressionStream !== 'undefined' && typeof DecompressionStream !== 'undefined' && raw.length > 2000;
+  return (zip ? streamBytes(raw, CompressionStream) : Promise.resolve(raw)).then(function(bytes) {
+    return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, sync.key, bytes);
+  }).then(function(ct) {
+    var box = { iv: b64enc(iv), ct: b64enc(new Uint8Array(ct)) };
+    if (zip) box.z = 1;
+    return box;
   });
 }
 function decryptObj(box) {
   return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64dec(box.iv) }, sync.key, b64dec(box.ct)).then(function(pt) {
-    return JSON.parse(new TextDecoder().decode(pt));
+    var u = new Uint8Array(pt);
+    return box.z ? streamBytes(u, DecompressionStream) : u;
+  }).then(function(u) {
+    return JSON.parse(new TextDecoder().decode(u));
   });
 }
 function initFirebase() {
